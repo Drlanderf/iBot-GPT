@@ -86,7 +86,7 @@ async def ask_gpt(ctx, message: str):
         member = await ctx.guild.fetch_member(ctx.user.id)
     user_roles_ids = [str(role.id) for role in member.roles]
     allowed_roles = ASK_GPT_ROLES_ALLOWED.split(', ')
-    if not any(role_id in user_roles_ids for role_id in allowed_roles):
+    if all(role_id not in user_roles_ids for role_id in allowed_roles):
         await ctx.response.send_message("Tu n'es pas autorisé a faire cette commande.", ephemeral=True)
         logging.info(f"Received slash command from unauthorized user : {ctx.user.name} {ctx.user.id}")
         return
@@ -122,7 +122,7 @@ async def ask_gpt_4(ctx, message: str):
         member = await ctx.guild.fetch_member(ctx.user.id)
     user_roles_ids = [str(role.id) for role in member.roles]
     allowed_roles = ASK_GPT4_ROLES_ALLOWED.split(', ')
-    if not any(role_id in user_roles_ids for role_id in allowed_roles):
+    if all(role_id not in user_roles_ids for role_id in allowed_roles):
         await ctx.response.send_message("Tu n'es pas autorisé a faire cette commande.", ephemeral=True)
         logging.info(f"Received slash command from unauthorized user : {ctx.user.name} {ctx.user.id}")
         return
@@ -139,10 +139,10 @@ async def ask_gpt_4(ctx, message: str):
         ]
     )
     logging.info(f"Response content of ask-gpt-4 generated at {datetime.datetime.now()}")
-    
+
     response_message = response['choices'][0]['message']['content']
     message_chunks = [response_message[i:i + 2000] for i in range(0, len(response_message), 2000)]
-   
+
     for message_chunk in message_chunks:
         await ctx.followup.send(message_chunk)
 # Slash command ask-gpt-4 ======================================================================
